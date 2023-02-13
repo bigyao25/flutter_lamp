@@ -1,42 +1,46 @@
-group 'plugins.flutter.lamp.lamp'
+group 'tech.rourou.flutter.lamp.flutter_lamp'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext.kotlin_version = '1.7.10'
     repositories {
-        jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
+        google()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
-        jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
+        google()
+        mavenCentral()
     }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 31
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-    lintOptions {
-        disable 'InvalidPackage'
     }
 }
