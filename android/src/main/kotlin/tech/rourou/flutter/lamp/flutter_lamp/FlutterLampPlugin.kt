@@ -70,6 +70,7 @@ class FlutterLampPlugin : FlutterPlugin, MethodCallHandler {
                     var cameraId =
                         camManager!!.cameraIdList[0] // Usually front camera is at 0 position.
                     camManager!!.setTorchMode(cameraId, on)
+//                    camManager!!.setTorchLevel(cameraId, 2)
                 }
             } catch (e: Exception) {
                 android.util.Log.e(TAG, e.toString())

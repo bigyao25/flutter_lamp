@@ -9,7 +9,7 @@ class FlutterLamp {
     return FlutterLampPlatform.instance.hasLamp();
   }
 
-  Future turn(bool on) {
-    return FlutterLampPlatform.instance.turn(on);
+  Future turn(bool on, {double intensity = 1.0}) {
+    return FlutterLampPlatform.instance.turn(on, intensity);
   }
 }

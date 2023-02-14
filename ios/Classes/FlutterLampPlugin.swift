@@ -1,45 +1,55 @@
 import Flutter
 import UIKit
+import AVFoundation
 
 public class FlutterLampPlugin: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "github.com/bigyao25/flutter_lamp", binaryMessenger: registrar.messenger())
-    let instance = FlutterLampPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-      let method = call.method
-      let args = call.arguments as? [String: Any]
-      
-      if method == "getPlatformVersion" {
-          result("iOS " + UIDevice.current.systemVersion)
-      } else if method == "hasLamp" {
-          let result = hasLamp()
-          result(result)
-      } else if method == "turn" else {
-          guard let on = args?["on"] else { return false }
-          guard let intensity = args?["intensity"] else { return 0 }
-          let result = turn(on, intensity)
-      }
-      
-  }
-    
-    private func hasLamp(){
-        let device = AVCaptureDevice.defaultDeviceWithMediaType
-        return device.hasTorch && device.hasFlash
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "github.com/bigyao25/flutter_lamp", binaryMessenger: registrar.messenger())
+        let instance = FlutterLampPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
-    private func turn(on: Bool, intensity: Float){
-        let device = AVCaptureDevice.defaultDeviceWithMediaType
-        if !(device.hasTorch && device.hasFlash) return;
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let method = call.method
+        let args = call.arguments as? [String: Any]
         
-        device.lockForConfiguration()
-        Float acceptedLevel =
-            (level < AVCaptureMaxAvailableTorchLevel ?
-             level : AVCaptureMaxAvailableTorchLevel);
+        if method == "getPlatformVersion" {
+            result("iOS " + UIDevice.current.systemVersion)
+        } else if method == "hasLamp" {
+            let res = hasLamp()
+            result(res)
+        } else if method == "turn" {
+            let on = (args?["on"] as! Bool?) ?? false
+            let intensity = (args?["intensity"] as! Double?) ?? 0
+            turn(on: on, intensity: Float(intensity))
+        }
+    }
+    
+    private func hasLamp() -> Bool {
+        let device = AVCaptureDevice.default(for: AVMediaType.video)
+        if device==nil { return false }
+        return (device?.hasTorch ?? false) && (device?.hasFlash ?? false)
+    }
+    
+    private func turn(on: Bool, intensity: Float) {
+        let device = AVCaptureDevice.default(for: AVMediaType.video)
+        if device==nil { return }
+        if !((device?.hasTorch ?? false) && (device?.hasFlash ?? false)) { return }
         
-        device.setTorchModeOnWithLevel(acceptedLevel)
-        device.unlockForConfiguration()
+        var level = intensity
+        if level<0 {level=0}
+        if level>1 {level=1}
+        
+        do{
+            try device?.lockForConfiguration()
+            
+            if on{
+                try device?.setTorchModeOn(level: level)
+                
+            } else{
+                device?.torchMode = .off
+            }
+            device?.unlockForConfiguration()
+        } catch {}
     }
 }

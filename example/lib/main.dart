@@ -17,13 +17,21 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  bool _on = false;
   final _flutterLampPlugin = FlutterLamp();
+  final ValueNotifier<double> _notifier = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+
+    _notifier.addListener(() {
+      if (_notifier.value < 0.01) {
+        _flutterLampPlugin.turn(false);
+      } else {
+        _flutterLampPlugin.turn(true, intensity: _notifier.value);
+      }
+    });
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -54,20 +62,29 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              Text('Running on: $_platformVersion\n'),
-              ElevatedButton(
-                  onPressed: () {
-                    _flutterLampPlugin.turn(!_on);
-                    setState(() {
-                      _on = !_on;
-                    });
-                  },
-                  child: const Text("Toggle Touch"))
-            ],
-          ),
+        body: ValueListenableBuilder(
+          valueListenable: _notifier,
+          builder: (BuildContext context, double value, Widget? child) {
+            return Center(
+              child: Column(
+                children: [
+                  Text('Running on: $_platformVersion\n'),
+                  ElevatedButton(
+                      onPressed: () {
+                        _notifier.value = _notifier.value <= 0.01 ? 1 : 0;
+                      },
+                      child: const Text("Toggle Touch")),
+                  Slider(
+                    value: value,
+                    onChanged: (value) {
+                      _notifier.value = value;
+                    },
+                  ),
+                  Text("value: ${_notifier.value}"),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

@@ -31,7 +31,7 @@ abstract class FlutterLampPlatform extends PlatformInterface {
     throw UnimplementedError('hasLamp() has not been implemented.');
   }
 
-  Future turn(bool on) {
+  Future turn(bool on, double intensity) {
     throw UnimplementedError('turn() has not been implemented.');
   }
 }

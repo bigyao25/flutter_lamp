@@ -15,7 +15,7 @@ class MockFlutterLampPlatform with MockPlatformInterfaceMixin implements Flutter
   }
 
   @override
-  Future turn(bool on) {
+  Future turn(bool on, double intensity) {
     // TODO: implement turn
     throw UnimplementedError();
   }

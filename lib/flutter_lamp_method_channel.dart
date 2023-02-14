@@ -21,7 +21,7 @@ class MethodChannelFlutterLamp extends FlutterLampPlatform {
   }
 
   @override
-  Future turn(bool on) async {
-    return await methodChannel.invokeMethod('turn', {'on': on});
+  Future turn(bool on, double intensity) async {
+    return await methodChannel.invokeMethod('turn', {'on': on, 'intensity': intensity});
   }
 }
